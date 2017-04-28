@@ -21,7 +21,7 @@ class BlogHandler(webapp2.RequestHandler):
         """
 
         query = Post.all().order('-created')
-        query_filtered_by_author = query.filter('author =', self.user)
+        query_filtered_by_author = query.filter('author', user)
         return query_filtered_by_author.fetch(limit = limit, offset = offset)
 
     def get_user_by_name(self, username):
@@ -71,7 +71,6 @@ class IndexHandler(BlogHandler):
         self.response.write(response)
 
 class BlogIndexHandler(BlogHandler):
-
     # number of blog posts per page to display
     page_size = 5
 
@@ -106,6 +105,7 @@ class BlogIndexHandler(BlogHandler):
             next_page = None
 
         # render the page
+
         t = jinja_env.get_template("blog.html")
         response = t.render(
                     posts=posts,
@@ -138,7 +138,8 @@ class NewPostHandler(BlogHandler):
             post = Post(
                 title=title,
                 body=body,
-                author=self.user)
+                author=self.user
+                )
             post.put()
 
             # get the id of the new post, so we can render the post's page (via the permalink)
